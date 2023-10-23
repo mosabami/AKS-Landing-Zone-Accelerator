@@ -1,36 +1,47 @@
+// For format details, see https://aka.ms/devcontainer.json. For config options, see the README at:
+// https://github.com/microsoft/vscode-dev-containers/tree/v0.202.5/containers/ubuntu
 {
-    "name": "Azure CAF rover",
-    // Update the 'dockerComposeFile' list if you have more compose files or use different names.
-    "dockerComposeFile": "docker-compose.yml",
-    // Container user to use in VSCode Online and GitHub Codespaces
-    "remoteUser": "vscode",
-    // The 'service' property is the name of the service for the container that VS Code should
-    // use. Update this value and .devcontainer/docker-compose.yml to the real service name.
-    "service": "rover",
-    // The optional 'workspaceFolder' property is the path VS Code should open by default when
-    // connected. This is typically a volume mount in .devcontainer/docker-compose.yml
-    "workspaceFolder": "/tf/caf",
-    // Use 'settings' to set *default* container specific settings.json values on container create.
-    // You can edit these settings after create using File > Preferences > Settings > Remote.
-    "settings": {
-        "files.eol": "\n",
-        "terminal.integrated.defaultProfile.linux": "/bin/bash",
-        "editor.tabSize": 2,
-        "terminal.integrated.scrollback": 64000,
-    },
-    // Uncomment the next line if you want start specific services in your Docker Compose config.
-    // "runServices": [],
-    // Uncomment this like if you want to keep your containers running after VS Code shuts down.
-    // "shutdownAction": "none",
-    // Uncomment the next line to run commands after the container is created.
-    //"postCreateCommand": "cp -R /tmp/.ssh-localhost/* ~/.ssh && sudo chmod 600 ~/.ssh/* && sudo chown -R $(whoami) /tf/caf && git config --global core.editor vim && pre-commit install && pre-commit autoupdate",
-    "postCreateCommand": "sudo cp -R /tmp/.ssh-localhost/* ~/.ssh && sudo chown -R $(whoami):$(whoami) /tf/caf ~/.ssh && sudo chmod 400 ~/.ssh/* && git config --global core.editor vi && pre-commit install && pre-commit autoupdate && sudo az aks install-cli",
-    "postStartCommand": "sudo chmod 666 /var/run/docker.sock",
-    // Add the IDs of extensions you want installed when the container is created in the array below.
-    "extensions": [
-        "4ops.terraform",
-        "mutantdino.resourcemonitor",
-        "eamodio.gitlens",
-        "golang.go"
-    ]
+	"name": "Ubuntu",
+	"runArgs": ["--init"],
+	"build": {
+		"dockerfile": "Dockerfile",
+		// Update 'VARIANT' to pick an Ubuntu version: hirsute, focal, bionic
+		// Use hirsute or bionic on local arm64/Apple Silicon.
+		"args": { "VARIANT": "focal" }
+	},
+
+	// Set *default* container specific settings.json values on container create.
+	"settings": {},
+
+	// Codespaces struggles running/debugging the web app with 4gb memory, so lets explicitly require 8gb
+	"hostRequirements": {
+		"memory": "8gb"
+	},
+
+	// Add the IDs of extensions you want installed when the container is created.
+	"extensions": [
+		"dbaeumer.vscode-eslint",
+		"ms-vscode.azurecli",
+		"ms-azuretools.vscode-bicep",
+		"streetsidesoftware.code-spell-checker",
+		"ms-playwright.playwright",
+		"cschleiden.vscode-github-actions"
+	],
+
+	// Use 'forwardPorts' to make a list of ports inside the container available locally.
+	// "forwardPorts": [],
+
+	// Use 'postCreateCommand' to run commands after the container is created.
+	// "postCreateCommand": "uname -a",
+
+	"postStartCommand": "cd helper && npm install",
+
+	// Comment out connect as root instead. More info: https://aka.ms/vscode-remote/containers/non-root.
+	"remoteUser": "vscode",
+	"features": {
+		"kubectl-helm-minikube": "1.21",
+		"github-cli": "latest",
+		"azure-cli": "latest",
+		"powershell": "latest"
+	}
 }
